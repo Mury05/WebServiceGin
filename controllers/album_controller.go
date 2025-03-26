@@ -30,18 +30,43 @@ func GetAlbumByID(c *gin.Context) {
 func AddAlbum(c *gin.Context) {
 	var newAlbum models.Album
 
+	// Bind JSON and check for errors
 	if err := c.BindJSON(&newAlbum); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
 		return
 	}
 
+	// Collecter les messages d'erreur de validation
+	var validationErrors []string
+
+	if newAlbum.ID == "" {
+		validationErrors = append(validationErrors, "L'ID de l'album est requis")
+	}
+	if newAlbum.Title == "" {
+		validationErrors = append(validationErrors, "Le titre de l'album est requis")
+	}
+	if newAlbum.Artist == "" {
+		validationErrors = append(validationErrors, "L'artiste de l'album est requis")
+	}
+	if newAlbum.Price <= 0 {
+		validationErrors = append(validationErrors, "Le prix de l'album doit être supérieur à 0")
+	}
+
+	// Vérifier l'unicité de l'ID
 	for _, a := range models.Albums {
 		if a.ID == newAlbum.ID {
-			c.IndentedJSON(http.StatusConflict, gin.H{"error": "Un album avec cet id existe déjà"})
+			validationErrors = append(validationErrors, "Un album avec cet ID existe déjà")
+			break
 		}
 	}
 
-	// Ajouter le nouvel album au slice
+	// Si des erreurs existent, les retourner
+	if len(validationErrors) > 0 {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"errors": validationErrors})
+		return
+	}
+
+	// Ajouter le nouvel album au slice et retourner le résultat
 	models.Albums = append(models.Albums, newAlbum)
 	c.IndentedJSON(http.StatusCreated, newAlbum)
 }
