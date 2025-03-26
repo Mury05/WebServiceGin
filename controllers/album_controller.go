@@ -36,26 +36,26 @@ func AddAlbum(c *gin.Context) {
 		return
 	}
 
-	// Collecter les messages d'erreur de validation
-	var validationErrors []string
+	// Collecter les erreurs de validation dans une map
+	validationErrors := make(map[string]string)
 
 	if newAlbum.ID == "" {
-		validationErrors = append(validationErrors, "L'ID de l'album est requis")
+		validationErrors["id"] = "L'ID de l'album est requis"
 	}
 	if newAlbum.Title == "" {
-		validationErrors = append(validationErrors, "Le titre de l'album est requis")
+		validationErrors["title"] = "Le titre de l'album est requis"
 	}
 	if newAlbum.Artist == "" {
-		validationErrors = append(validationErrors, "L'artiste de l'album est requis")
+		validationErrors["artist"] = "L'artiste de l'album est requis"
 	}
 	if newAlbum.Price <= 0 {
-		validationErrors = append(validationErrors, "Le prix de l'album doit être supérieur à 0")
+		validationErrors["price"] = "Le prix de l'album doit être supérieur à 0"
 	}
 
 	// Vérifier l'unicité de l'ID
 	for _, a := range models.Albums {
 		if a.ID == newAlbum.ID {
-			validationErrors = append(validationErrors, "Un album avec cet ID existe déjà")
+			validationErrors["id"] = "Un album avec cet ID existe déjà"
 			break
 		}
 	}
