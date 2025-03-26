@@ -54,7 +54,14 @@ func addAlbum(c *gin.Context) {
 	var newAlbum album
 
 	if err := c.BindJSON(&newAlbum); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
 		return
+	}
+
+	for _, a := range albums {
+		if a.ID == newAlbum.ID {
+			c.IndentedJSON(http.StatusConflict, gin.H{"error": "Un album avec cet id existe déjà"})
+		}
 	}
 
 	// Ajouter le nouvel album au slice
