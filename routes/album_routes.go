@@ -9,6 +9,9 @@ import (
 
 func AlbumRoutes(router *gin.Engine) {
 	router.Use(middlewares.Logger())
+	router.Use(middlewares.RequestLogger())
+	router.Use(middlewares.Recovery())
+	router.Use(middlewares.RateLimiter())
 	api := router.Group("/api")
 	{
 		api.GET("albums", controllers.GetAlbums)
