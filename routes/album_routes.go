@@ -15,7 +15,9 @@ func AlbumRoutes(router *gin.Engine) {
 	api := router.Group("/api")
 	{
 		api.GET("albums", controllers.GetAlbums)
-		api.GET("albums/:id", controllers.GetAlbumByID)
 		api.POST("albums", controllers.AddAlbum)
+		api.GET("albums/:id", controllers.GetAlbumByID)
+		api.PUT("albums/:id", controllers.EditAlbum)
+		api.DELETE("albums/:id", controllers.DeleteAlbum)
 	}
 }
